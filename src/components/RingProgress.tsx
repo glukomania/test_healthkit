@@ -1,6 +1,10 @@
 import { View, Text, StyleSheet } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import Svg, { Circle, Rect } from 'react-native-svg';
+import Animated, {useAnimatedProps, useSharedValue, withTiming} from 'react-native-reanimated'
+
+const AnimatedCircle = Animated.createAnimatedComponent(Circle)
+
 
 type RingProgressProps = {
   radius?: number
@@ -10,16 +14,29 @@ type RingProgressProps = {
 
 const color = '#EF0F55'
 
-const RingProgress = ({radius = 100, strokeWidth = 30, progress = 0}: RingProgressProps) => {
+const RingProgress = ({
+  radius = 100, 
+  strokeWidth = 35, 
+  progress
+}: RingProgressProps) => {
 
-  const innerRadius = radius - strokeWidth/2
+  const innerRadius = radius - strokeWidth / 2
   const circumference = 2 * Math.PI * innerRadius
+
+  const fill = useSharedValue(0.6)
+  const animatedProps = useAnimatedProps(()=> ({
+    strokeDasharray: [circumference * fill.value, circumference]
+  }))
+
+  useEffect(() => {
+    fill.value = withTiming(progress, {duration: 1500})
+  }, [progress])
+
   return (
     <View style={{width: radius * 2, height: radius * 2, alignSelf: 'center'}}>
      <Svg>
-
-
-      <Circle 
+      <AnimatedCircle 
+        animatedProps={animatedProps}
         r={innerRadius} 
         cx={radius} 
         cy={radius} 
