@@ -1,7 +1,8 @@
 import { View, Text, StyleSheet } from 'react-native'
 import React, { useEffect } from 'react'
-import Svg, { Circle, Rect } from 'react-native-svg';
+import Svg, { Circle, CircleProps } from 'react-native-svg';
 import Animated, {useAnimatedProps, useSharedValue, withTiming} from 'react-native-reanimated'
+import { AntDesign } from '@expo/vector-icons';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle)
 
@@ -28,6 +29,18 @@ const RingProgress = ({
     strokeDasharray: [circumference * fill.value, circumference]
   }))
 
+  const circleDefaultProps: CircleProps = {
+    r: innerRadius,
+    cx: radius,
+    cy: radius,
+    originX: radius,
+    originY: radius,
+
+    strokeWidth: strokeWidth,
+    stroke: color,
+    strokeLinecap: 'round' 
+  }
+
   useEffect(() => {
     fill.value = withTiming(progress, {duration: 1500})
   }, [progress])
@@ -35,28 +48,18 @@ const RingProgress = ({
   return (
     <View style={{width: radius * 2, height: radius * 2, alignSelf: 'center'}}>
      <Svg>
+      {/* filling */}
+      <AntDesign name="arrowright" size={24} color="black" style={{position: 'absolute', top: strokeWidth/6, alignSelf: 'center'}}/>
       <AnimatedCircle 
         animatedProps={animatedProps}
-        r={innerRadius} 
-        cx={radius} 
-        cy={radius} 
-        originX={radius} 
-        originY={radius}
-
-        strokeWidth={strokeWidth} 
-        stroke={color} 
-        strokeDasharray={[circumference * progress, circumference]} 
-        strokeLinecap='round' 
+        {... circleDefaultProps}
+        // strokeDasharray= {[circumference * progress, circumference]}
         rotation='-90' 
 
       />
-
+      {/* background */}
       <Circle 
-        cx={radius} 
-        cy={radius} 
-        r={innerRadius} 
-        strokeWidth={strokeWidth} 
-        stroke={color}
+        {...circleDefaultProps}
         opacity={0.2} 
       />
 
